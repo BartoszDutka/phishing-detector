@@ -1,6 +1,33 @@
 import pandas as pd
 
 
+def deduplicate_and_split_safe(
+    df: pd.DataFrame,
+    url_col: str = "URL",
+) -> pd.DataFrame:
+    """Remove duplicate URLs and keep only first occurrence to prevent data leakage."""
+    initial_rows = len(df)
+
+    # Remove exact duplicates (full record)
+    df_dedup = df.drop_duplicates()
+    exact_dup_count = initial_rows - len(df_dedup)
+
+    # Remove URL duplicates (keep first, remove rest)
+    df_dedup = df_dedup.drop_duplicates(subset=[url_col], keep='first')
+    url_dup_count = len(df) - exact_dup_count - len(df_dedup)
+
+    final_rows = len(df_dedup)
+    removed = initial_rows - final_rows
+
+    print(f"\n=== Data Deduplication ===")
+    print(f"Initial rows: {initial_rows}")
+    print(f"Exact duplicates removed: {exact_dup_count}")
+    print(f"URL duplicates removed: {url_dup_count}")
+    print(f"Final rows: {final_rows} (removed {removed} total)")
+
+    return df_dedup
+
+
 def preprocess_df(
     df: pd.DataFrame,
     label_col: str = "label",
@@ -12,7 +39,7 @@ def preprocess_df(
 
     out = df.copy()
 
-    # Ensure label is {0,1} with 1=phishing, 0=legal
+    # Ensure label is {0,1} with 1=legitimate/legal, 0=phishing
     out = out.dropna(subset=[label_col])
     y_raw = out[label_col]
 
@@ -20,14 +47,14 @@ def preprocess_df(
     if not pd.api.types.is_numeric_dtype(y_raw):
         y_norm = y_raw.astype(str).str.strip().str.lower()
         mapping = {
-            "phishing": 1,
-            "phish": 1,
+            "phishing": 0,
+            "phish": 0,
             "1": 1,
             "true": 1,
             "yes": 1,
-            "legal": 0,
-            "legit": 0,
-            "legitimate": 0,
+            "legal": 1,
+            "legit": 1,
+            "legitimate": 1,
             "0": 0,
             "false": 0,
             "no": 0,

@@ -38,10 +38,10 @@ def quick_eda(df: pd.DataFrame, label_col: str = "label", top_missing: int = 15)
 
         uniques = set(df[label_col].dropna().unique().tolist())
         if uniques.issubset({0, 1}):
-            mapped = df[label_col].map({0: "legal", 1: "phishing"})
+            mapped = df[label_col].map({0: "phishing", 1: "legitimate/legal"})
             mapped_vc = mapped.value_counts(dropna=False)
             mapped_pct = mapped.value_counts(dropna=False, normalize=True).mul(100).round(3)
-            print("\nClass distribution (mapped 0->legal, 1->phishing):")
+            print("\nClass distribution (mapped 0->phishing, 1->legitimate/legal):")
             print(pd.DataFrame({"count": mapped_vc, "percent": mapped_pct}))
     else:
         print(f"\nNo `{label_col}` column found; cannot compute phishing/legal distribution.")

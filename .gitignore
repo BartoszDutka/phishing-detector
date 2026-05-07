@@ -1,0 +1,42 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+.venv/
+env/
+ENV/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# VS Code / system files
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Data files / datasets
+data/
+*.csv
+*.xlsx
+*.parquet
+*.pkl
+*.joblib
+
+# Kaggle / credentials
+kaggle.json
+.env
+
+# Generated outputs
+outputs/*
+!outputs/.gitkeep
+
+# Logs
+*.log
+
+# Test / coverage
+.pytest_cache/
+.coverage
+htmlcov/
